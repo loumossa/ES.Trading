@@ -132,18 +132,18 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Today's economic calendar ──────────────────── -->
+                <!-- ── Sector heat ────────────────────────────────── -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <TextBlock Text="TODAY'S ECONOMIC CALENDAR" Style="{StaticResource SectionHeader}"/>
-                        <TextBlock Text="No scheduled releases today."
+                        <TextBlock Text="SECTOR HEAT" Style="{StaticResource SectionHeader}"/>
+                        <TextBlock Text="No sector-flagged events."
                                    FontSize="11" Foreground="{StaticResource TextMutedBrush}"
                                    Margin="0,4,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding EconomicEvents.Count}" Value="0">
+                                        <DataTrigger Binding="{Binding SectorHeat.Count}" Value="0">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -151,42 +151,42 @@
                             </TextBlock.Style>
                         </TextBlock>
 
-                        <DataGrid ItemsSource="{Binding EconomicEvents}"
-                                  IsReadOnly="True" HeadersVisibility="Column"
-                                  MaxHeight="260" Margin="0,4,0,0">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Time"     Binding="{Binding TimeLabel}" Width="80"/>
-                                <DataGridTextColumn Header="Ccy"      Binding="{Binding Country}"   Width="50"/>
-                                <DataGridTextColumn Header="Event"    Binding="{Binding Title}"     Width="*"/>
-                                <DataGridTemplateColumn Header="Impact" Width="70">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border x:Name="Badge" Style="{StaticResource ImpactBadge}">
-                                                <TextBlock Text="{Binding ImpactLabel}"
-                                                           FontSize="10" FontWeight="SemiBold"
+                        <ItemsControl ItemsSource="{Binding SectorHeat}" Margin="0,6,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                                            Padding="0,8,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="60"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding SectorLabel}"
+                                                           FontWeight="SemiBold" FontSize="12"
                                                            Foreground="{StaticResource TextPrimaryBrush}"/>
-                                            </Border>
-                                            <DataTemplate.Triggers>
-                                                <DataTrigger Binding="{Binding Impact}" Value="High">
-                                                    <Setter TargetName="Badge" Property="Background"
-                                                            Value="{StaticResource AccentRedBrush}"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Impact}" Value="Medium">
-                                                    <Setter TargetName="Badge" Property="Background"
-                                                            Value="{StaticResource AccentAmberBrush}"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Impact}" Value="Low">
-                                                    <Setter TargetName="Badge" Property="Background"
-                                                            Value="{StaticResource BgElevatedBrush}"/>
-                                                </DataTrigger>
-                                            </DataTemplate.Triggers>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Forecast" Binding="{Binding Forecast}" Width="80"/>
-                                <DataGridTextColumn Header="Previous" Binding="{Binding Previous}" Width="80"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                                <TextBlock FontSize="10"
+                                                           Foreground="{StaticResource TextMutedBrush}">
+                                                    <Run Text="{Binding EventCount, Mode=OneWay}"/>
+                                                    <Run Text=" events"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding TopHeadlines}"
+                                                       FontSize="11" TextWrapping="Wrap"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="12,0,12,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding ScoreLabel}"
+                                                       FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource AccentBlueBrush}"
+                                                       HorizontalAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </Border>
 
@@ -278,18 +278,18 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Sector heat ────────────────────────────────── -->
+                <!-- ── Today's economic calendar ──────────────────── -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <TextBlock Text="SECTOR HEAT" Style="{StaticResource SectionHeader}"/>
-                        <TextBlock Text="No sector-flagged events."
+                        <TextBlock Text="TODAY'S ECONOMIC CALENDAR" Style="{StaticResource SectionHeader}"/>
+                        <TextBlock Text="No scheduled releases today."
                                    FontSize="11" Foreground="{StaticResource TextMutedBrush}"
                                    Margin="0,4,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SectorHeat.Count}" Value="0">
+                                        <DataTrigger Binding="{Binding EconomicEvents.Count}" Value="0">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -297,42 +297,42 @@
                             </TextBlock.Style>
                         </TextBlock>
 
-                        <ItemsControl ItemsSource="{Binding SectorHeat}" Margin="0,6,0,0">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
-                                            Padding="0,8,0,8">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="200"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="60"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0">
-                                                <TextBlock Text="{Binding SectorLabel}"
-                                                           FontWeight="SemiBold" FontSize="12"
+                        <DataGrid ItemsSource="{Binding EconomicEvents}"
+                                  IsReadOnly="True" HeadersVisibility="Column"
+                                  MaxHeight="260" Margin="0,4,0,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Time"     Binding="{Binding TimeLabel}" Width="80"/>
+                                <DataGridTextColumn Header="Ccy"      Binding="{Binding Country}"   Width="50"/>
+                                <DataGridTextColumn Header="Event"    Binding="{Binding Title}"     Width="*"/>
+                                <DataGridTemplateColumn Header="Impact" Width="70">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border x:Name="Badge" Style="{StaticResource ImpactBadge}">
+                                                <TextBlock Text="{Binding ImpactLabel}"
+                                                           FontSize="10" FontWeight="SemiBold"
                                                            Foreground="{StaticResource TextPrimaryBrush}"/>
-                                                <TextBlock FontSize="10"
-                                                           Foreground="{StaticResource TextMutedBrush}">
-                                                    <Run Text="{Binding EventCount, Mode=OneWay}"/>
-                                                    <Run Text=" events"/>
-                                                </TextBlock>
-                                            </StackPanel>
-                                            <TextBlock Grid.Column="1" Text="{Binding TopHeadlines}"
-                                                       FontSize="11" TextWrapping="Wrap"
-                                                       Foreground="{StaticResource TextSecondaryBrush}"
-                                                       VerticalAlignment="Center"
-                                                       Margin="12,0,12,0"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding ScoreLabel}"
-                                                       FontSize="14" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource AccentBlueBrush}"
-                                                       HorizontalAlignment="Right"
-                                                       VerticalAlignment="Center"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                            </Border>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Impact}" Value="High">
+                                                    <Setter TargetName="Badge" Property="Background"
+                                                            Value="{StaticResource AccentRedBrush}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Impact}" Value="Medium">
+                                                    <Setter TargetName="Badge" Property="Background"
+                                                            Value="{StaticResource AccentAmberBrush}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Impact}" Value="Low">
+                                                    <Setter TargetName="Badge" Property="Background"
+                                                            Value="{StaticResource BgElevatedBrush}"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Forecast" Binding="{Binding Forecast}" Width="80"/>
+                                <DataGridTextColumn Header="Previous" Binding="{Binding Previous}" Width="80"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Border>
 
