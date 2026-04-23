@@ -1,0 +1,176 @@
+<UserControl x:Class="ES.Trading.DesktopApp.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgPrimaryBrush}">
+
+    <UserControl.Resources>
+        <!-- Field row layout: label (left, fixed) | input (right, stretch) | hint (below) -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground"        Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin"            Value="0,0,16,0"/>
+        </Style>
+
+        <Style x:Key="FieldHint" TargetType="TextBlock">
+            <Setter Property="Foreground"   Value="{StaticResource TextMutedBrush}"/>
+            <Setter Property="FontSize"     Value="11"/>
+            <Setter Property="Margin"       Value="0,2,0,12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="NumericInput" TargetType="TextBox">
+            <Setter Property="Background"        Value="{StaticResource BgElevatedBrush}"/>
+            <Setter Property="Foreground"        Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush"       Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness"   Value="1"/>
+            <Setter Property="Padding"           Value="6,4"/>
+            <Setter Property="CaretBrush"        Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Width"             Value="120"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+
+                <!-- ─── Risk limits ───────────────────────────────────────────── -->
+                <TextBlock Style="{StaticResource SectionHeader}" Text="RISK LIMITS"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Daily loss limit ($)"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding DailyLossLimitDollars, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Dollar amount that fires the daily shutdown alert."/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Max attempts per day"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding MaxAttempts, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Max number of trade entries before the shutdown alert fires."/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Fixed stop (ticks)"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding FixedStopTicks, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Default stop in ticks — informational reference only, not enforced."/>
+
+                <!-- ─── Opening Range ─────────────────────────────────────────── -->
+                <TextBlock Style="{StaticResource SectionHeader}" Text="OPENING RANGE &amp; LEVELS"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="OR window (seconds)"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding ORWindowSeconds, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Duration of OR capture window starting at 9:30:00 ET."/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Rotation distance (handles)"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding RotationHandles, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Handles per rotation level, measured from OR High/Low."/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Partial profit (handles)"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding PartialProfitHandles, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Handles at which to take the pay-for-the-trade exit."/>
+
+                <!-- ─── Alerts ────────────────────────────────────────────────── -->
+                <TextBlock Style="{StaticResource SectionHeader}" Text="ALERTS"/>
+
+                <CheckBox Content="Play audio alert sounds in the NT8 panel"
+                          Foreground="{StaticResource TextPrimaryBrush}"
+                          IsChecked="{Binding AlertSoundEnabled}"
+                          Margin="0,0,0,8"/>
+
+                <!-- ─── Panel behavior ────────────────────────────────────────── -->
+                <TextBlock Style="{StaticResource SectionHeader}" Text="PANEL BEHAVIOR"/>
+
+                <CheckBox Content="Keep NT8 panel always on top of other windows"
+                          Foreground="{StaticResource TextPrimaryBrush}"
+                          IsChecked="{Binding PanelAlwaysOnTop}"
+                          Margin="0,0,0,12"/>
+
+                <!-- ─── Discipline ────────────────────────────────────────────── -->
+                <TextBlock Style="{StaticResource SectionHeader}" Text="DISCIPLINE"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Rolling window (days)"/>
+                    <TextBox   Grid.Column="1" Style="{StaticResource NumericInput}"
+                               Text="{Binding DisciplineRollingDays, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource FieldHint}"
+                           Text="Number of days included in the rolling discipline score average."/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ─── Footer ────────────────────────────────────────────────────────── -->
+        <Border Grid.Row="1" Background="{StaticResource BgSurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
+                Padding="24,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Changes to NT8 Add-On thresholds apply after restarting the Add-On."
+                           Foreground="{StaticResource TextMutedBrush}" FontSize="11"
+                           VerticalAlignment="Center"/>
+
+                <Button Grid.Column="1" Content="Save settings"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SaveCommand}"
+                        Padding="20,8"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

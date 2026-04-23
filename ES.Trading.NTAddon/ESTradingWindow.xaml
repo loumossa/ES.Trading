@@ -1,0 +1,289 @@
+<Window x:Class="ES.Trading.NTAddon.ESTradingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ES Trading Panel"
+        Width="320" MinWidth="280"
+        Height="640" MinHeight="500"
+        ResizeMode="CanResize"
+        WindowStyle="ToolWindow"
+        Background="#FF1E1E1E"
+        Foreground="#FFDDDDDD"
+        FontFamily="Segoe UI"
+        FontSize="12">
+
+    <Window.Resources>
+        <!-- Section header style -->
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#FF888888"/>
+            <Setter Property="Margin" Value="0,8,0,3"/>
+        </Style>
+
+        <!-- Value label style -->
+        <Style x:Key="ValueLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#FFDDDDDD"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Key label (left column) -->
+        <Style x:Key="KeyLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#FF888888"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+
+        <!-- Alert item style -->
+        <Style x:Key="AlertItem" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,1"/>
+        </Style>
+
+        <!-- Divider -->
+        <Style x:Key="Divider" TargetType="Separator">
+            <Setter Property="Background" Value="#FF333333"/>
+            <Setter Property="Margin" Value="0,6"/>
+        </Style>
+
+        <!-- Mood button style -->
+        <Style x:Key="MoodButton" TargetType="Button">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="Background" Value="#FF333333"/>
+            <Setter Property="Foreground" Value="#FFDDDDDD"/>
+            <Setter Property="BorderBrush" Value="#FF555555"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+        <StackPanel>
+
+            <!-- ── Header ─────────────────────────────────────────────────── -->
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="ES Trading Panel" FontSize="14" FontWeight="SemiBold"
+                           Foreground="#FFEEEEEE" VerticalAlignment="Center"/>
+                <TextBlock x:Name="ClockLabel" Grid.Column="1"
+                           FontSize="11" Foreground="#FF888888" VerticalAlignment="Center"/>
+            </Grid>
+            <Separator Style="{StaticResource Divider}"/>
+
+            <!-- ── No-Trade Day Warning ───────────────────────────────────── -->
+            <Border x:Name="NoTradeDayBanner" Visibility="Collapsed"
+                    Background="#FF5A1A1A" BorderBrush="#FFCC3333"
+                    BorderThickness="1" CornerRadius="3" Padding="8,5" Margin="0,0,0,8">
+                <TextBlock Text="⚠  NO-TRADE DAY  (FOMC / NFP / CPI)"
+                           FontSize="11" FontWeight="SemiBold"
+                           Foreground="#FFFF6666" TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- ── Mood Rating ────────────────────────────────────────────── -->
+            <TextBlock Text="PRE-SESSION" Style="{StaticResource SectionHeader}"/>
+            <Grid Margin="0,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Mood / Readiness" Style="{StaticResource KeyLabel}"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="1" Tag="1" Style="{StaticResource MoodButton}" Click="MoodButton_Click"/>
+                    <Button Content="2" Tag="2" Style="{StaticResource MoodButton}" Click="MoodButton_Click"/>
+                    <Button Content="3" Tag="3" Style="{StaticResource MoodButton}" Click="MoodButton_Click"/>
+                    <Button Content="4" Tag="4" Style="{StaticResource MoodButton}" Click="MoodButton_Click"/>
+                    <Button Content="5" Tag="5" Style="{StaticResource MoodButton}" Click="MoodButton_Click"/>
+                </StackPanel>
+            </Grid>
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="No-trade day?" Style="{StaticResource KeyLabel}"/>
+                <CheckBox x:Name="NoTradeDayCheck" Grid.Column="1"
+                          Foreground="#FFDDDDDD" VerticalAlignment="Center"
+                          Checked="NoTradeDayCheck_Changed"
+                          Unchecked="NoTradeDayCheck_Changed"/>
+            </Grid>
+            <Separator Style="{StaticResource Divider}"/>
+
+            <!-- ── Opening Range ──────────────────────────────────────────── -->
+            <TextBlock Text="OPENING RANGE" Style="{StaticResource SectionHeader}"/>
+            <Grid Margin="0,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Status" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="ORStatusLabel" Grid.Column="1"
+                           Text="Waiting..." Foreground="#FF888888"
+                           Style="{StaticResource ValueLabel}"/>
+            </Grid>
+            <Grid Margin="0,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="OR High" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="ORHighLabel" Grid.Column="1" Text="—"
+                           Style="{StaticResource ValueLabel}" Foreground="#FF88CC88"/>
+            </Grid>
+            <Grid Margin="0,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="OR Low" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="ORLowLabel" Grid.Column="1" Text="—"
+                           Style="{StaticResource ValueLabel}" Foreground="#FFCC8888"/>
+            </Grid>
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Range (handles)" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="ORRangeLabel" Grid.Column="1" Text="—"
+                           Style="{StaticResource ValueLabel}"/>
+            </Grid>
+            <Separator Style="{StaticResource Divider}"/>
+
+            <!-- ── Levels ─────────────────────────────────────────────────── -->
+            <TextBlock Text="LEVELS" Style="{StaticResource SectionHeader}"/>
+
+            <!-- Last price + bias -->
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Last / Bias" Style="{StaticResource KeyLabel}"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="LastPriceLabel" Text="—"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="#FFEEEEEE" VerticalAlignment="Center"/>
+                    <TextBlock Text=" " VerticalAlignment="Center"/>
+                    <TextBlock x:Name="BiasLabel" Text=""
+                               FontSize="11" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Rotation levels grid -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="70"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Long" FontSize="10"
+                           Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Short" FontSize="10"
+                           Foreground="#FF888888" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="1st Rotation (15H)" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="Rot1LongLabel"  Grid.Row="1" Grid.Column="1" Text="—"
+                           FontSize="12" Foreground="#FF88CC88" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock x:Name="Rot1ShortLabel" Grid.Row="1" Grid.Column="2" Text="—"
+                           FontSize="12" Foreground="#FFCC8888" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="2nd Rotation (30H)" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="Rot2LongLabel"  Grid.Row="2" Grid.Column="1" Text="—"
+                           FontSize="12" Foreground="#FF88CC88" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock x:Name="Rot2ShortLabel" Grid.Row="2" Grid.Column="2" Text="—"
+                           FontSize="12" Foreground="#FFCC8888" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+            <Separator Style="{StaticResource Divider}"/>
+
+            <!-- ── Macro Levels ───────────────────────────────────────────── -->
+            <TextBlock Text="MACRO LEVELS" Style="{StaticResource SectionHeader}"/>
+            <ItemsControl x:Name="MacroLevelsList" Margin="0,0,0,4">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Label}" Style="{StaticResource KeyLabel}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat=F2}"
+                                       Style="{StaticResource ValueLabel}" FontSize="12"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Separator Style="{StaticResource Divider}"/>
+
+            <!-- ── Session Stats ──────────────────────────────────────────── -->
+            <TextBlock Text="SESSION" Style="{StaticResource SectionHeader}"/>
+            <Grid Margin="0,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Cumulative P&amp;L" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="PLLabel" Grid.Column="1" Text="$0.00"
+                           FontSize="13" FontWeight="SemiBold"
+                           Foreground="#FFEEEEEE" VerticalAlignment="Center"/>
+            </Grid>
+            <Grid Margin="0,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Attempts" Style="{StaticResource KeyLabel}"/>
+                <TextBlock x:Name="AttemptsLabel" Grid.Column="1" Text="0 / 4"
+                           Style="{StaticResource ValueLabel}"/>
+            </Grid>
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Loss limit used" Style="{StaticResource KeyLabel}"/>
+                <ProgressBar x:Name="LossLimitBar" Grid.Column="1"
+                             Width="90" Height="10" Minimum="0" Maximum="100"
+                             VerticalAlignment="Center"
+                             Background="#FF333333" Foreground="#FFCC8888"/>
+            </Grid>
+            <Separator Style="{StaticResource Divider}"/>
+
+            <!-- ── Alerts ─────────────────────────────────────────────────── -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="ALERTS" Style="{StaticResource SectionHeader}"/>
+                <Button x:Name="ClearAlertsBtn" Grid.Column="1" Content="Clear"
+                        FontSize="9" Padding="4,1" Margin="0,6,0,3"
+                        Background="#FF333333" Foreground="#FF888888"
+                        BorderBrush="#FF444444" BorderThickness="1"
+                        Click="ClearAlerts_Click"/>
+            </Grid>
+            <Border Background="#FF161616" BorderBrush="#FF333333"
+                    BorderThickness="1" CornerRadius="3" Padding="6">
+                <ScrollViewer x:Name="AlertScroller" MaxHeight="140"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="AlertsPanel"/>
+                </ScrollViewer>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

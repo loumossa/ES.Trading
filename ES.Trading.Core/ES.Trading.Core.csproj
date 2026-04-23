@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      Multi-target so that:
+        - NT8 Add-On (net48) picks up the net48 build
+        - Desktop App (net8.0-windows) picks up the net8.0 build
+      Same source files, two outputs. This avoids the System.Text.Json binding
+      mismatch that the desktop app hits when a net48 DLL references
+      System.Text.Json 8.0.0.5 but runs on the net8 runtime which ships a
+      different assembly version.
+    -->
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>ES.Trading.Core</AssemblyName>
+    <RootNamespace>ES.Trading.Core</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Dapper: lightweight micro-ORM. No magic, SQL you can read. -->
+    <PackageReference Include="Dapper" Version="2.1.35" />
+
+    <!--
+      Microsoft.Data.Sqlite: official SQLite provider.
+      Targets net48 so it pulls the managed SQLite binaries automatically.
+    -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
+
+    <!--
+      System.Text.Json: used for Tags serialization in Trade model and by the
+      MarketOverview JSON sources. On net8 this resolves to the runtime's version;
+      on net48 this pulls in the backported package.
+    -->
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Embed the SPX constituents seed. Edit the CSV and rebuild to refresh. -->
+    <EmbeddedResource Include="MarketOverview\spx_constituents.csv" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <!-- net48 doesn't pull System.Net.Http automatically. net8 has it built-in. -->
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+</Project>

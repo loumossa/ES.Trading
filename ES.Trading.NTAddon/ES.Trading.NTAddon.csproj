@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      NT8 NinjaScript Add-Ons must target .NET Framework 4.8.
+      The output is a DLL placed in NT8's AddOns folder.
+    -->
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ES.Trading.NTAddon</AssemblyName>
+    <RootNamespace>ES.Trading.NTAddon</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <!--
+      Output to NT8's bin\Custom folder (NOT the AddOns subfolder).
+      NT8 only scans its own compiled NinjaTrader.Custom.dll for AddOnBase
+      subclasses; external DLLs in AddOns\ are invisible. Placing the DLL
+      in bin\Custom\ makes it resolvable when the NinjaScript stub in
+      AddOns\ references it. See deploy/README.md for the setup steps.
+    -->
+    <OutputPath>$(USERPROFILE)\Documents\NinjaTrader 8\bin\Custom\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference the shared Core library -->
+    <ProjectReference Include="..\ES.Trading.Core\ES.Trading.Core.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      NinjaTrader assemblies — reference from your NT8 installation directory.
+      These are NOT NuGet packages; they ship with NT8.
+      Adjust the path if NT8 is installed elsewhere.
+    -->
+    <Reference Include="NinjaTrader.Core">
+      <HintPath>$(ProgramW6432)\NinjaTrader 8\bin\NinjaTrader.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- NinjaTrader.Client removed — not needed (no order submission) and causes
+         'Globals' ambiguity with NinjaTrader.Core. Re-add only if NT Client API is required. -->
+    <Reference Include="NinjaTrader.Gui">
+      <HintPath>$(ProgramW6432)\NinjaTrader 8\bin\NinjaTrader.Gui.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- NinjaTrader.Cbi and NinjaTrader.Data namespaces are contained within
+         NinjaTrader.Core.dll — no separate DLLs exist for these. -->
+  </ItemGroup>
+
+
+</Project>

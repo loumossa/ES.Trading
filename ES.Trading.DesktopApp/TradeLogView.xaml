@@ -1,0 +1,175 @@
+<UserControl x:Class="ES.Trading.DesktopApp.Views.TradeLogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgPrimaryBrush}">
+
+    <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ── Left: Trade list ────────────────────────────────────────────── -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Filter bar -->
+            <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,8" Padding="12,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Date:" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,8,0"/>
+                    <TextBox Grid.Column="1" Text="{Binding FilterDate, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"/>
+                    <Button Grid.Column="3" Content="◀" Style="{StaticResource SecondaryButton}"
+                            Padding="8,4" Command="{Binding GoTodayCommand}"/>
+                    <Button Grid.Column="5" Content="Today" Style="{StaticResource SecondaryButton}"
+                            Padding="10,4" Command="{Binding GoTodayCommand}"/>
+                    <Button Grid.Column="7" Content="Export CSV" Style="{StaticResource SecondaryButton}"
+                            Padding="10,4" Command="{Binding ExportCsvCommand}"/>
+                </Grid>
+            </Border>
+
+            <!-- Trade grid -->
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding Trades}"
+                      SelectedItem="{Binding SelectedTrade}"
+                      BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="#"          Binding="{Binding AttemptNumber}" Width="30"/>
+                    <DataGridTextColumn Header="Time"       Binding="{Binding Time}"          Width="70"/>
+                    <DataGridTextColumn Header="Instrument" Binding="{Binding Instrument}"    Width="60"/>
+                    <DataGridTextColumn Header="Direction"  Binding="{Binding Direction}"     Width="60"/>
+                    <DataGridTextColumn Header="Entry"      Binding="{Binding EntryPrice, StringFormat=F2}" Width="70"/>
+                    <DataGridTextColumn Header="P&amp;L"   Binding="{Binding PLDisplay}"     Width="80"/>
+                    <DataGridTextColumn Header="Setup"      Binding="{Binding SetupType}"     Width="*"/>
+                    <DataGridCheckBoxColumn Header="📝"     Binding="{Binding HasNotes}"      Width="30" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="📷"     Binding="{Binding HasScreenshot}" Width="30" IsReadOnly="True"/>
+                </DataGrid.Columns>
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Direction}" Value="Long">
+                                <Setter Property="BorderBrush"     Value="#FF2A5A2A"/>
+                                <Setter Property="BorderThickness"  Value="2,0,0,0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Direction}" Value="Short">
+                                <Setter Property="BorderBrush"     Value="#FF5A2A2A"/>
+                                <Setter Property="BorderThickness"  Value="2,0,0,0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+            </DataGrid>
+
+            <!-- Legs table -->
+            <Border Grid.Row="2" Margin="0,8,0,0" Style="{StaticResource Card}" Padding="12">
+                <StackPanel>
+                    <TextBlock Text="TRADE LEGS" Style="{StaticResource SectionHeader}" Margin="0,0,0,6"/>
+                    <DataGrid ItemsSource="{Binding Legs}" IsReadOnly="True" MaxHeight="140"
+                              BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Time"      Binding="{Binding Time}"      Width="70"/>
+                            <DataGridTextColumn Header="Type"      Binding="{Binding Type}"      Width="80"/>
+                            <DataGridTextColumn Header="Price"     Binding="{Binding Price, StringFormat=F2}" Width="70"/>
+                            <DataGridTextColumn Header="Contracts" Binding="{Binding Contracts}" Width="70"/>
+                            <DataGridTextColumn Header="P&amp;L"  Binding="{Binding PLDisplay}"  Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ── Right: Annotation panel ────────────────────────────────────── -->
+        <Border Grid.Column="2" Style="{StaticResource Card}" Padding="16">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="ANNOTATION" Style="{StaticResource SectionHeader}"/>
+
+                    <!-- Discipline checks -->
+                    <TextBlock Text="Discipline checks" FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <ItemsControl ItemsSource="{Binding Checks}" Margin="0,0,0,12">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Icon}" FontSize="12"
+                                               Foreground="{Binding Passed, Converter={StaticResource BoolToColorConverter}}"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Rule}"
+                                               FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Tags -->
+                    <TextBlock Text="Tags" FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <ItemsControl ItemsSource="{Binding Tags}" Margin="0,0,0,12">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding Label}"
+                                          IsChecked="{Binding IsSelected}"
+                                          Foreground="{StaticResource TextPrimaryBrush}"
+                                          Margin="0,2" FontSize="11"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Notes -->
+                    <TextBlock Text="Notes" FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             MinHeight="80" MaxHeight="160"
+                             VerticalScrollBarVisibility="Auto"
+                             Margin="0,0,0,12"/>
+
+                    <!-- Screenshot -->
+                    <TextBlock Text="Screenshot" FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding ScreenshotPath}" FontSize="10"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               TextWrapping="Wrap" Margin="0,0,0,6"
+                               Visibility="{Binding HasScreenshot, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <TextBlock Text="No screenshot attached" FontSize="10"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               Margin="0,0,0,6"
+                               Visibility="{Binding HasScreenshot, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+
+                    <Button Content="Attach screenshot"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding AttachScreenshotCommand}"
+                            Margin="0,0,0,16" HorizontalAlignment="Left"/>
+
+                    <Button Content="Save annotation"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SaveAnnotationCommand}"
+                            HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

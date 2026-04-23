@@ -1,0 +1,97 @@
+ticker,cik,name,sector
+AAPL,320193,Apple Inc.,InformationTechnology
+MSFT,789019,Microsoft Corp.,InformationTechnology
+NVDA,1045810,NVIDIA Corp.,InformationTechnology
+GOOGL,1652044,Alphabet Inc. Class A,CommunicationServices
+GOOG,1652044,Alphabet Inc. Class C,CommunicationServices
+AMZN,1018724,Amazon.com Inc.,ConsumerDiscretionary
+META,1326801,Meta Platforms Inc.,CommunicationServices
+TSLA,1318605,Tesla Inc.,ConsumerDiscretionary
+BRK.B,1067983,Berkshire Hathaway Inc. Class B,Financials
+LLY,59478,Eli Lilly and Company,HealthCare
+JPM,19617,JPMorgan Chase & Co.,Financials
+V,1403161,Visa Inc.,Financials
+UNH,731766,UnitedHealth Group,HealthCare
+XOM,34088,Exxon Mobil Corp.,Energy
+MA,1141391,Mastercard Inc.,Financials
+AVGO,1730168,Broadcom Inc.,InformationTechnology
+PG,80424,Procter & Gamble Co.,ConsumerStaples
+HD,354950,Home Depot Inc.,ConsumerDiscretionary
+JNJ,200406,Johnson & Johnson,HealthCare
+ORCL,1341439,Oracle Corp.,InformationTechnology
+COST,909832,Costco Wholesale Corp.,ConsumerStaples
+ABBV,1551152,AbbVie Inc.,HealthCare
+WMT,104169,Walmart Inc.,ConsumerStaples
+BAC,70858,Bank of America Corp.,Financials
+MRK,310158,Merck & Co. Inc.,HealthCare
+NFLX,1065280,Netflix Inc.,CommunicationServices
+KO,21344,Coca-Cola Co.,ConsumerStaples
+CVX,93410,Chevron Corp.,Energy
+CRM,1108524,Salesforce Inc.,InformationTechnology
+TMO,97745,Thermo Fisher Scientific Inc.,HealthCare
+AMD,2488,Advanced Micro Devices Inc.,InformationTechnology
+PEP,77476,PepsiCo Inc.,ConsumerStaples
+ADBE,796343,Adobe Inc.,InformationTechnology
+WFC,72971,Wells Fargo & Co.,Financials
+ABT,1800,Abbott Laboratories,HealthCare
+CSCO,858877,Cisco Systems Inc.,InformationTechnology
+ACN,1467373,Accenture plc,InformationTechnology
+MCD,63908,McDonald's Corp.,ConsumerDiscretionary
+TXN,97476,Texas Instruments Inc.,InformationTechnology
+DHR,313616,Danaher Corp.,HealthCare
+DIS,1744489,Walt Disney Co.,CommunicationServices
+PM,1413329,Philip Morris International,ConsumerStaples
+VZ,732712,Verizon Communications Inc.,CommunicationServices
+IBM,51143,International Business Machines,InformationTechnology
+NKE,320187,Nike Inc.,ConsumerDiscretionary
+CAT,18230,Caterpillar Inc.,Industrials
+QCOM,804328,Qualcomm Inc.,InformationTechnology
+INTU,896878,Intuit Inc.,InformationTechnology
+AMGN,318154,Amgen Inc.,HealthCare
+GS,886982,Goldman Sachs Group,Financials
+RTX,101829,RTX Corp.,Industrials
+MS,895421,Morgan Stanley,Financials
+PFE,78003,Pfizer Inc.,HealthCare
+UNP,100885,Union Pacific Corp.,Industrials
+INTC,50863,Intel Corp.,InformationTechnology
+UPS,1090727,United Parcel Service,Industrials
+BLK,1364742,BlackRock Inc.,Financials
+AXP,4962,American Express Co.,Financials
+SPGI,64040,S&P Global Inc.,Financials
+HON,773840,Honeywell International,Industrials
+T,732717,AT&T Inc.,CommunicationServices
+BKNG,1075531,Booking Holdings,ConsumerDiscretionary
+LOW,60667,Lowe's Companies,ConsumerDiscretionary
+ELV,1156039,Elevance Health Inc.,HealthCare
+SYK,310764,Stryker Corp.,HealthCare
+NEE,753308,NextEra Energy Inc.,Utilities
+BSX,885725,Boston Scientific Corp.,HealthCare
+PGR,80661,Progressive Corp.,Financials
+DE,315189,Deere & Co.,Industrials
+VRTX,875320,Vertex Pharmaceuticals,HealthCare
+PLD,1045609,Prologis Inc.,RealEstate
+TJX,109198,TJX Companies,ConsumerDiscretionary
+ISRG,1035267,Intuitive Surgical,HealthCare
+CMCSA,1166691,Comcast Corp.,CommunicationServices
+BA,12927,Boeing Co.,Industrials
+C,831001,Citigroup Inc.,Financials
+SCHW,316709,Charles Schwab Corp.,Financials
+AMAT,6951,Applied Materials Inc.,InformationTechnology
+NOW,1373715,ServiceNow Inc.,InformationTechnology
+GILD,882095,Gilead Sciences,HealthCare
+ADP,8670,Automatic Data Processing,Industrials
+REGN,872589,Regeneron Pharmaceuticals,HealthCare
+LMT,936468,Lockheed Martin Corp.,Industrials
+MMC,62709,Marsh & McLennan Companies,Financials
+ADI,6281,Analog Devices Inc.,InformationTechnology
+SBUX,829224,Starbucks Corp.,ConsumerDiscretionary
+PANW,1327567,Palo Alto Networks,InformationTechnology
+MU,723125,Micron Technology,InformationTechnology
+MDT,1613103,Medtronic plc,HealthCare
+MO,764180,Altria Group,ConsumerStaples
+KLAC,319201,KLA Corp.,InformationTechnology
+BX,1393818,Blackstone Inc.,Financials
+SO,92122,Southern Co.,Utilities
+LRCX,707549,Lam Research Corp.,InformationTechnology
+DUK,17797,Duke Energy Corp.,Utilities
+CI,1739940,The Cigna Group,HealthCare

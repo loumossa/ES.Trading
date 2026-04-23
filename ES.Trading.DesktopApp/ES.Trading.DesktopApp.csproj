@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--
+      Targets net8.0-windows for the Desktop App.
+      net48 would also work if you want a single framework across all three projects,
+      but net8.0 gives you better performance, nullable refs, and modern C# features
+      for the review/analytics workflow which runs outside NT8.
+      The Core library (net48) is referenceable from net8.0 without issue.
+    -->
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>ES.Trading.DesktopApp</AssemblyName>
+		<RootNamespace>ES.Trading.DesktopApp</RootNamespace>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<!-- ApplicationIcon>trading.ico</ApplicationIcon -->
+		<!-- Add a .ico file here later if you want a custom taskbar icon -->
+
+		<!--
+      Self-contained publish: include the .NET runtime so you don't need
+      .NET installed separately on your machine. Useful if you ever want
+      to run this on a clean Windows install.
+      Set to false if you prefer a smaller build and .NET 8 is already installed.
+    -->
+		<SelfContained>false</SelfContained>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ES.Trading.Core\ES.Trading.Core.csproj"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+      LiveCharts2 WPF package.
+      Note: currently on RC builds — stable but not yet 2.0 GA.
+      Package: LiveChartsCore.SkiaSharpView.WPF
+    -->
+		<PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc6.1"/>
+
+		<!--
+      SkiaSharp targeting note: net8.0-windows defaults to net8.0-windows
+      but SkiaSharp 3 does not provide a net8.0-windows TFM.
+      Specify the min Windows version to resolve correctly.
+      See: https://github.com/beto-rodriguez/LiveCharts2/issues/1772
+    -->
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+		<!-- Required for SkiaSharp 3 on net8 Windows — resolves TFM mismatch -->
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+	</PropertyGroup>
+
+</Project>
