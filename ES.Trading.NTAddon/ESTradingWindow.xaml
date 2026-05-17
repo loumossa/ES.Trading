@@ -78,6 +78,20 @@
             </Grid>
             <Separator Style="{StaticResource Divider}"/>
 
+            <!-- ── Init / Health Warning ──────────────────────────────────── -->
+            <Border x:Name="UnhealthyBanner" Visibility="Collapsed"
+                    Background="#FF5A1A1A" BorderBrush="#FFCC3333"
+                    BorderThickness="1" CornerRadius="3" Padding="8,5" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="✖  ADDON DEGRADED — EXECUTIONS MAY NOT BE CAPTURED"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="#FFFF6666" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="UnhealthyDetail" Text=""
+                               FontSize="10" Foreground="#FFFFAAAA"
+                               TextWrapping="Wrap" Margin="0,3,0,0"/>
+                </StackPanel>
+            </Border>
+
             <!-- ── No-Trade Day Warning ───────────────────────────────────── -->
             <Border x:Name="NoTradeDayBanner" Visibility="Collapsed"
                     Background="#FF5A1A1A" BorderBrush="#FFCC3333"

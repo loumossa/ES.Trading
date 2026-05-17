@@ -53,7 +53,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="#"          Binding="{Binding AttemptNumber}" Width="30"/>
                     <DataGridTextColumn Header="Time"       Binding="{Binding Time}"          Width="70"/>
-                    <DataGridTextColumn Header="Instrument" Binding="{Binding Instrument}"    Width="60"/>
+                    <DataGridTextColumn Header="Contract"   Binding="{Binding ContractDisplay}" Width="90"/>
                     <DataGridTextColumn Header="Direction"  Binding="{Binding Direction}"     Width="60"/>
                     <DataGridTextColumn Header="Entry"      Binding="{Binding EntryPrice, StringFormat=F2}" Width="70"/>
                     <DataGridTextColumn Header="P&amp;L"   Binding="{Binding PLDisplay}"     Width="80"/>

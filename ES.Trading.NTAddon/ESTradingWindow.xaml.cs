@@ -60,6 +60,17 @@ namespace ES.Trading.NTAddon
         /// <summary>Full state refresh — call after any SessionState mutation.</summary>
         public void RefreshState(SessionState state)
         {
+            // Health banner — shown first so the trader sees it before anything else
+            if (!state.IsHealthy)
+            {
+                UnhealthyBanner.Visibility = Visibility.Visible;
+                UnhealthyDetail.Text = state.InitErrorMessage ?? "Initialization failed.";
+            }
+            else
+            {
+                UnhealthyBanner.Visibility = Visibility.Collapsed;
+            }
+
             // OR section
             if (state.ORIsLocked)
             {

@@ -29,7 +29,7 @@ namespace ES.Trading.NTAddon.Services
     /// </summary>
     public class ExecutionListener : IDisposable
     {
-        private readonly Account _account;
+        private readonly List<Account> _accounts;
         private readonly TradeRepository _tradeRepo;
         private readonly DisciplineRepository _disciplineRepo;
         private readonly SessionState _state;
@@ -44,24 +44,30 @@ namespace ES.Trading.NTAddon.Services
         public event Action? StateChanged;
 
         public ExecutionListener(
-            Account account,
+            IEnumerable<Account> accounts,
             TradeRepository tradeRepo,
             DisciplineRepository disciplineRepo,
             SessionState state,
             AlertService alertService)
         {
-            _account        = account;
+            _accounts       = accounts?.ToList() ?? new List<Account>();
             _tradeRepo      = tradeRepo;
             _disciplineRepo = disciplineRepo;
             _state          = state;
             _alertService   = alertService;
 
-            _account.ExecutionUpdate += OnExecutionUpdate;
+            // Subscribe to every account so fills are captured no matter which
+            // account the user trades on (live, Sim101, Playback, etc).
+            foreach (var account in _accounts)
+                account.ExecutionUpdate += OnExecutionUpdate;
         }
+
+        public IReadOnlyList<Account> SubscribedAccounts => _accounts;
 
         public void Dispose()
         {
-            _account.ExecutionUpdate -= OnExecutionUpdate;
+            foreach (var account in _accounts)
+                account.ExecutionUpdate -= OnExecutionUpdate;
         }
 
         // ─── Core handler ─────────────────────────────────────────────────────────
@@ -83,6 +89,13 @@ namespace ES.Trading.NTAddon.Services
         private void ProcessExecution(Execution exec)
         {
             if (_state.CurrentDay == null) return;
+
+            // Roll into a new TradingDay if the calendar date changed since init.
+            // Without this, fills after midnight on NT8 sessions that stay open
+            // across days would be attached to yesterday's row.
+            var todayKey = DateTime.Today.ToString("yyyy-MM-dd");
+            if (_state.CurrentDay.Date != todayKey)
+                RolloverDay();
 
             var instrument = exec.Instrument.FullName;
             var isMES      = instrument.StartsWith("MES", StringComparison.OrdinalIgnoreCase);
@@ -147,6 +160,32 @@ namespace ES.Trading.NTAddon.Services
             StateChanged?.Invoke();
         }
 
+        // ─── Day rollover ─────────────────────────────────────────────────────────
+
+        private void RolloverDay()
+        {
+            AddonLog.Info($"[ES.Trading] Day rollover: {_state.CurrentDay?.Date} → {DateTime.Today:yyyy-MM-dd}");
+
+            // Reset per-day state (preserves config thresholds; nulls CurrentDay)
+            _state.Reset();
+
+            // Reload (or create) today's TradingDay row and prime session state
+            var today = _tradeRepo.GetOrCreateToday();
+            _state.CurrentDay        = today;
+            _state.CumulativePL      = today.DailyPL;
+            _state.AttemptCount      = today.AttemptCount;
+            _state.IsNoTradeDay      = today.IsNoTradeDay;
+            _state.DailyLossLimitHit = today.DailyLossLimitHit;
+
+            // Any open position from yesterday is no longer ours to track —
+            // NT8 carries position state across the session, but for accounting
+            // purposes we treat each calendar day as a fresh slate.
+            _openTrades.Clear();
+            _netPosition.Clear();
+
+            StateChanged?.Invoke();
+        }
+
         // ─── Trade lifecycle ──────────────────────────────────────────────────────
 
         private void OpenNewTrade(Execution exec, string instrument, int fillContracts)
@@ -160,13 +199,14 @@ namespace ES.Trading.NTAddon.Services
 
             var trade = new CoreTrade
             {
-                DayId         = _state.CurrentDay.Id,
-                EntryTime     = exec.Time,
-                Instrument    = "ES",
-                Direction     = direction,
-                EntryPrice    = exec.Price,
-                AttemptNumber = newCount,
-                SetupType     = InferSetupType()
+                DayId          = _state.CurrentDay.Id,
+                EntryTime      = exec.Time,
+                Instrument     = "ES",
+                ContractSymbol = instrument,   // full NT8 symbol, e.g. "ES 06-26"
+                Direction      = direction,
+                EntryPrice     = exec.Price,
+                AttemptNumber  = newCount,
+                SetupType      = InferSetupType()
             };
 
             _tradeRepo.InsertTrade(trade);

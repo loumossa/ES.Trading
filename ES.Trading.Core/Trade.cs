@@ -11,8 +11,14 @@ namespace ES.Trading.Core.Models
 
         public DateTime EntryTime { get; set; }
 
-        /// <summary>"ES" or "MES"</summary>
+        /// <summary>"ES" or "MES" — the normalized root, used for grouping in analytics queries.</summary>
         public string Instrument { get; set; } = "ES";
+
+        /// <summary>
+        /// The full NT8 contract symbol at fill time (e.g. "ES 06-26", "MES 09-26").
+        /// Preserved per-trade so historical analysis across roll weeks stays accurate.
+        /// </summary>
+        public string? ContractSymbol { get; set; }
 
         /// <summary>"Long" or "Short"</summary>
         public string Direction { get; set; } = string.Empty;
