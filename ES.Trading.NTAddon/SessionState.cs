@@ -14,6 +14,17 @@ namespace ES.Trading.NTAddon.Services
     /// </summary>
     public class SessionState
     {
+        // ─── Health ───────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// False when AddOn initialization or runtime setup failed. The WPF panel
+        /// surfaces this as a red banner so a silent broken state isn't possible.
+        /// </summary>
+        public bool IsHealthy { get; set; } = true;
+
+        /// <summary>Short user-facing reason why <see cref="IsHealthy"/> is false.</summary>
+        public string? InitErrorMessage { get; set; }
+
         // ─── Day ──────────────────────────────────────────────────────────────────
 
         public TradingDay? CurrentDay { get; set; }

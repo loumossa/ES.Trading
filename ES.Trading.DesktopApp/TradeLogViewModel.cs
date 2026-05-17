@@ -103,16 +103,17 @@ namespace ES.Trading.DesktopApp.ViewModels
             {
                 Trades.Add(new TradeRow
                 {
-                    Id            = t.Id,
-                    Time          = t.EntryTime.ToString("HH:mm:ss"),
-                    Instrument    = t.Instrument,
-                    Direction     = t.Direction,
-                    EntryPrice    = t.EntryPrice,
-                    TotalPL       = t.TotalPL,
-                    SetupType     = t.SetupType ?? "—",
-                    AttemptNumber = t.AttemptNumber,
-                    HasNotes      = !string.IsNullOrWhiteSpace(t.Notes),
-                    HasScreenshot = !string.IsNullOrWhiteSpace(t.ScreenshotPath)
+                    Id             = t.Id,
+                    Time           = t.EntryTime.ToString("HH:mm:ss"),
+                    Instrument     = t.Instrument,
+                    ContractSymbol = t.ContractSymbol,
+                    Direction      = t.Direction,
+                    EntryPrice     = t.EntryPrice,
+                    TotalPL        = t.TotalPL,
+                    SetupType      = t.SetupType ?? "—",
+                    AttemptNumber  = t.AttemptNumber,
+                    HasNotes       = !string.IsNullOrWhiteSpace(t.Notes),
+                    HasScreenshot  = !string.IsNullOrWhiteSpace(t.ScreenshotPath)
                 });
             }
         }
@@ -227,7 +228,7 @@ namespace ES.Trading.DesktopApp.ViewModels
             var allTrades = _tradeRepo.GetAllTrades().ToList();
 
             using var writer = new StreamWriter(dialog.FileName);
-            writer.WriteLine("Id,Date,EntryTime,Instrument,Direction,EntryPrice,StopPrice," +
+            writer.WriteLine("Id,Date,EntryTime,Instrument,ContractSymbol,Direction,EntryPrice,StopPrice," +
                              "AttemptNumber,SetupType,TotalPL,Tags,Notes");
 
             foreach (var t in allTrades)
@@ -237,6 +238,7 @@ namespace ES.Trading.DesktopApp.ViewModels
                     $"{t.EntryTime:yyyy-MM-dd}," +
                     $"{t.EntryTime:HH:mm:ss}," +
                     $"{t.Instrument}," +
+                    $"{t.ContractSymbol ?? ""}," +
                     $"{t.Direction}," +
                     $"{t.EntryPrice:F2}," +
                     $"{t.StopPrice?.ToString("F2") ?? ""}," +
@@ -256,14 +258,15 @@ namespace ES.Trading.DesktopApp.ViewModels
 
     public class TradeRow : ViewModelBase
     {
-        public int     Id            { get; set; }
-        public string  Time          { get; set; } = string.Empty;
-        public string  Instrument    { get; set; } = string.Empty;
-        public string  Direction     { get; set; } = string.Empty;
-        public double  EntryPrice    { get; set; }
-        public double? TotalPL       { get; set; }
-        public string  SetupType     { get; set; } = string.Empty;
-        public int     AttemptNumber { get; set; }
+        public int     Id             { get; set; }
+        public string  Time           { get; set; } = string.Empty;
+        public string  Instrument     { get; set; } = string.Empty;
+        public string? ContractSymbol { get; set; }
+        public string  Direction      { get; set; } = string.Empty;
+        public double  EntryPrice     { get; set; }
+        public double? TotalPL        { get; set; }
+        public string  SetupType      { get; set; } = string.Empty;
+        public int     AttemptNumber  { get; set; }
 
         private bool _hasNotes;
         private bool _hasScreenshot;
@@ -271,6 +274,13 @@ namespace ES.Trading.DesktopApp.ViewModels
         public bool HasScreenshot { get => _hasScreenshot; set => SetField(ref _hasScreenshot, value); }
 
         public string PLDisplay => TotalPL.HasValue ? $"${TotalPL:F2}" : "Open";
+
+        /// <summary>
+        /// Full contract symbol when present, otherwise the normalized root.
+        /// Trades recorded before the ContractSymbol column was added show as "ES" / "MES".
+        /// </summary>
+        public string ContractDisplay =>
+            !string.IsNullOrWhiteSpace(ContractSymbol) ? ContractSymbol! : Instrument;
     }
 
     public class TradeLegRow

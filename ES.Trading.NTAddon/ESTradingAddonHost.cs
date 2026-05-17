@@ -27,10 +27,6 @@ namespace ES.Trading.NTAddon
         private AlertService?      _alertService;
         private ExecutionListener? _executionListener;
 
-        // ─── NT8 resources ────────────────────────────────────────────────────────
-
-        private Account? _account;
-
         // ─── Panel ────────────────────────────────────────────────────────────────
 
         private ESTradingWindow? _window;
@@ -43,7 +39,15 @@ namespace ES.Trading.NTAddon
 
         public void Initialize(Action<string> log)
         {
-            _log = log ?? (_ => { });
+            // Tee NT8's Print into our file log so silent failures leave a trail
+            // even if the Output tab isn't open.
+            _log = msg =>
+            {
+                try { log?.Invoke(msg); } catch { /* never break on logging */ }
+                AddonLog.Info(msg);
+            };
+
+            AddonLog.Info("[ES.Trading] AddOn initialization starting.");
 
             try
             {
@@ -51,10 +55,39 @@ namespace ES.Trading.NTAddon
                 InitializeServices();
                 SubscribeAccount();
                 OpenPanel();
+
+                AddonLog.Info("[ES.Trading] AddOn initialization completed successfully.");
             }
             catch (Exception ex)
             {
+                AddonLog.Error("[ES.Trading] AddOn initialization FAILED.", ex);
                 _log($"[ES.Trading] Add-On initialization failed: {ex}");
+
+                if (_state != null)
+                {
+                    _state.IsHealthy        = false;
+                    _state.InitErrorMessage = ex.Message;
+
+                    // Refresh the panel if it opened before the failure so the
+                    // banner becomes visible.
+                    _window?.Dispatcher.InvokeAsync(() => _window.RefreshState(_state));
+                }
+                else
+                {
+                    // State never got built — pop a one-shot message box on the UI
+                    // thread so the user isn't left guessing.
+                    try
+                    {
+                        NinjaTrader.Core.Globals.RandomDispatcher.InvokeAsync(() =>
+                            System.Windows.MessageBox.Show(
+                                "ES Trading AddOn failed to initialize:\n\n" + ex.Message +
+                                "\n\nSee " + AddonLog.LogPath + " for details.",
+                                "ES Trading",
+                                System.Windows.MessageBoxButton.OK,
+                                System.Windows.MessageBoxImage.Error));
+                    }
+                    catch { /* Best effort */ }
+                }
             }
         }
 
@@ -121,17 +154,19 @@ namespace ES.Trading.NTAddon
 
         private void SubscribeAccount()
         {
-            _account = Account.All.FirstOrDefault(a => a.Name != "Sim101")
-                    ?? Account.All.FirstOrDefault();
+            var accounts = Account.All?.ToList() ?? new System.Collections.Generic.List<Account>();
 
-            if (_account == null)
+            if (accounts.Count == 0)
             {
-                _log("[ES.Trading] No account found.");
+                _log("[ES.Trading] No NT8 accounts found — execution capture is disabled.");
                 return;
             }
 
+            foreach (var acc in accounts)
+                _log($"[ES.Trading] Subscribing to account: {acc.Name}");
+
             _executionListener = new ExecutionListener(
-                _account, _tradeRepo!, _disciplineRepo!, _state!, _alertService!);
+                accounts, _tradeRepo!, _disciplineRepo!, _state!, _alertService!);
 
             _executionListener.StateChanged += () =>
                 _window?.Dispatcher.InvokeAsync(() => _window.RefreshState(_state!));

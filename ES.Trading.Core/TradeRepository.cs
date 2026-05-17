@@ -117,10 +117,10 @@ namespace ES.Trading.Core.Data
         {
             using var conn = _db.OpenConnection();
             trade.Id = conn.QuerySingle<int>(
-                @"INSERT INTO Trades (DayId, EntryTime, Instrument, Direction, EntryPrice,
+                @"INSERT INTO Trades (DayId, EntryTime, Instrument, ContractSymbol, Direction, EntryPrice,
                                      StopPrice, AttemptNumber, SetupType, IsMESFractionalExit,
                                      TotalPL, Notes, ScreenshotPath, TagsJson)
-                  VALUES (@DayId, @EntryTime, @Instrument, @Direction, @EntryPrice,
+                  VALUES (@DayId, @EntryTime, @Instrument, @ContractSymbol, @Direction, @EntryPrice,
                           @StopPrice, @AttemptNumber, @SetupType, @IsMESFractionalExit,
                           @TotalPL, @Notes, @ScreenshotPath, @TagsJson);
                   SELECT last_insert_rowid();",
@@ -134,6 +134,7 @@ namespace ES.Trading.Core.Data
             conn.Execute(
                 @"UPDATE Trades SET
                     Instrument          = @Instrument,
+                    ContractSymbol      = @ContractSymbol,
                     Direction           = @Direction,
                     EntryPrice          = @EntryPrice,
                     StopPrice           = @StopPrice,

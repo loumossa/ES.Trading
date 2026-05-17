@@ -48,8 +48,9 @@ namespace ES.Trading.Core.Data
         }
 
         /// <summary>
-        /// Creates all tables and seeds Configuration if they don't exist.
-        /// Safe to call on every startup — uses CREATE TABLE IF NOT EXISTS throughout.
+        /// Creates all tables and seeds Configuration if they don't exist, and
+        /// runs lightweight schema migrations for columns added after the first
+        /// release. Safe to call on every startup.
         /// </summary>
         public void EnsureCreated()
         {
@@ -66,6 +67,11 @@ namespace ES.Trading.Core.Data
                 conn.Execute(Sql.CreateConfiguration, transaction: tx);
                 conn.Execute(Sql.SeedConfiguration, transaction: tx);
 
+                // Migrations for columns added after the original schema.
+                // SQLite's CREATE TABLE IF NOT EXISTS doesn't add new columns to
+                // existing tables, so each addition needs an explicit check.
+                AddColumnIfMissing(conn, tx, "Trades", "ContractSymbol", "TEXT");
+
                 tx.Commit();
             }
             catch
@@ -73,6 +79,27 @@ namespace ES.Trading.Core.Data
                 tx.Rollback();
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Idempotently adds a column to a table. SQLite has no "IF NOT EXISTS"
+        /// syntax for columns, so we inspect <c>PRAGMA table_info</c> first.
+        /// </summary>
+        private static void AddColumnIfMissing(
+            IDbConnection conn, IDbTransaction tx,
+            string table, string column, string columnType)
+        {
+            var existing = conn.Query<string>(
+                $"SELECT name FROM pragma_table_info('{table}');",
+                transaction: tx);
+
+            foreach (var name in existing)
+                if (string.Equals(name, column, StringComparison.OrdinalIgnoreCase))
+                    return;
+
+            conn.Execute(
+                $"ALTER TABLE {table} ADD COLUMN {column} {columnType};",
+                transaction: tx);
         }
 
         private static class Sql
@@ -99,12 +126,16 @@ namespace ES.Trading.Core.Data
                     Price   REAL    NOT NULL
                 );";
 
+            // Note: ContractSymbol is the NT8 full instrument name (e.g. "ES 06-26")
+            // captured at the time of the fill, while Instrument stays the
+            // normalized root ("ES" or "MES") for grouping in analytics queries.
             public const string CreateTrades = @"
                 CREATE TABLE IF NOT EXISTS Trades (
                     Id                  INTEGER PRIMARY KEY AUTOINCREMENT,
                     DayId               INTEGER NOT NULL REFERENCES TradingDays(Id),
                     EntryTime           TEXT    NOT NULL,
                     Instrument          TEXT    NOT NULL DEFAULT 'ES',
+                    ContractSymbol      TEXT,
                     Direction           TEXT    NOT NULL,
                     EntryPrice          REAL    NOT NULL,
                     StopPrice           REAL,

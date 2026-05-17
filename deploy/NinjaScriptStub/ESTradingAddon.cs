@@ -39,18 +39,44 @@ namespace NinjaTrader.NinjaScript.AddOns
                 Description = "ES Futures intraday trading panel — OR levels, alerts, and session tracking.";
                 Name        = "ES Trading Panel";
 
-                _barsRequest = new BarsRequest(
-                    Instrument.GetInstrument("ES 06-25"),
-                    DateTime.Now.AddDays(-1),
-                    DateTime.Now);
+                try
+                {
+                    string symbol = ES.Trading.NTAddon.Services.FrontMonthResolver
+                        .ResolveFrontMonthSymbol("ES");
+                    var es = ES.Trading.NTAddon.Services.FrontMonthResolver.ResolveFrontMonthEs();
+                    if (es != null)
+                    {
+                        Print("[ES.Trading] Resolved front-month contract: " + symbol);
+                        _barsRequest = new BarsRequest(es, DateTime.Now.AddDays(-1), DateTime.Now);
+                    }
+                    else
+                    {
+                        Print("[ES.Trading] NT8 has no instrument record for "
+                              + symbol + " — bars subscription disabled, but execution capture will still run.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Never let bars-request failure block State.Active — execution
+                    // capture is the more important responsibility of this AddOn.
+                    Print("[ES.Trading] Front-month resolution failed: " + ex);
+                }
             }
             else if (State == State.Configure)
             {
                 if (_barsRequest != null)
                 {
-                    _barsRequest.BarsPeriod   = new BarsPeriod { BarsPeriodType = BarsPeriodType.Tick, Value = 1 };
-                    _barsRequest.TradingHours = TradingHours.Get("CME US Index Futures RTH");
-                    _barsRequest.Update      += OnBarsUpdate;
+                    try
+                    {
+                        _barsRequest.BarsPeriod   = new BarsPeriod { BarsPeriodType = BarsPeriodType.Tick, Value = 1 };
+                        _barsRequest.TradingHours = TradingHours.Get("CME US Index Futures RTH");
+                        _barsRequest.Update      += OnBarsUpdate;
+                    }
+                    catch (Exception ex)
+                    {
+                        Print("[ES.Trading] BarsRequest configuration failed: " + ex);
+                        _barsRequest = null;
+                    }
                 }
             }
             else if (State == State.Active)
